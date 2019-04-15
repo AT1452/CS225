@@ -266,6 +266,13 @@ vector<int> SquareMaze::solveMaze()
 {
   std::stack<int> s;
   int * dist = new int[size];
+  if(visited[0]==false)
+  {
+    for(int i = 0; i<size;i++)
+    {
+      visited[i]=false;
+    }
+  }
   //std::vector<int> dist(size);
   s.push(0);
   put_length(s,dist);
@@ -289,28 +296,28 @@ vector<int> SquareMaze::solveMaze()
   int runner = max_dist;
   while(runner!=0)
   {
-    std::cout<<"runner value: "<<runner<<"\n";
+    //std::cout<<"runner value: "<<runner<<"\n";
     if(canTravel_helper(runner,0) && dist[runner]-dist[runner+1]==1)//right
     {
-      std::cout<<"case 1"<<std::endl;
+      //std::cout<<"case 1"<<std::endl;
       temp.insert(temp.begin(),2);
       runner =runner+1;
     }
     if(canTravel_helper(runner,1) && dist[runner]-dist[runner+width]==1)//down
     {
-      std::cout<<"case 2"<<std::endl;
+      //std::cout<<"case 2"<<std::endl;
       temp.insert(temp.begin(),3);
       runner =runner+width;
     }
     if(canTravel_helper(runner,2) && dist[runner]-dist[runner-1]==1)//left
     {
-      std::cout<<"case 3"<<std::endl;
+      //std::cout<<"case 3"<<std::endl;
       temp.insert(temp.begin(),0);
       runner =runner-1;
     }
     if(canTravel_helper(runner,3) && dist[runner]-dist[runner-width]==1)//up
     {
-      std::cout<<"case 4"<<std::endl;
+      //std::cout<<"case 4"<<std::endl;
       temp.insert(temp.begin(),1);
       runner =runner-width;
     }
@@ -406,18 +413,18 @@ void SquareMaze::put_length(std::stack<int> s,int * dist)//std::vector<int> dist
   }
 }
 cs225::PNG * SquareMaze::drawMaze() const {
-  std::cout<<"pass draw1 \n";
+  //std::cout<<"pass draw1 \n";
   cs225::PNG* ret = new cs225::PNG((width * 10) + 1, (height * 10) + 1);
   for (int i = 0; i < (height * 10) + 1; i++)
   {
     ret->getPixel(0, i).l = 0.0;
   }
-  std::cout<<"pass draw2 \n";
+  //std::cout<<"pass draw2 \n";
   for (int i = 10; i < (width * 10) + 1; i++)
   {
     ret->getPixel(i, 0).l = 0.0;
   }
-  std::cout<<"pass draw3 \n";
+  //std::cout<<"pass draw3 \n";
   for (int x = 0; x < width; x++)
   {
     for (int y = 0; y < height; y++)
@@ -438,22 +445,22 @@ cs225::PNG * SquareMaze::drawMaze() const {
       }
     }
   }
-  std::cout<<"pass drawf \n";
+  //std::cout<<"pass drawf \n";
   return ret;
 }
 
 cs225::PNG * SquareMaze::drawMazeWithSolution() {
-  std::cout<<"hit \n";
+  //std::cout<<"hit \n";
   cs225::PNG* ret = drawMaze();
-  std::cout<<"drawmaze done \n";
+  //std::cout<<"drawmaze done \n";
   vector<int> steps = solveMaze();
-  std::cout<<"solvemaze \n";
+  //std::cout<<"solvemaze \n";
   int x = 5; //starting
   int y = 5; //starting
-  std::cout<<"pass1 \n";
+  //std::cout<<"pass1 \n";
   for (size_t j = 0; j < steps.size(); j++) {
     if (steps[j] == 0) {
-      std::cout<<"pass 2 \n";
+      //std::cout<<"pass 2 \n";
       for (int i = 0; i < 11; i++) {//draw 10
         ret->getPixel(x+i, y).h = 0;
         ret->getPixel(x+i, y).s = 1;
@@ -462,7 +469,7 @@ cs225::PNG * SquareMaze::drawMazeWithSolution() {
       }
       x += 10;//increment currpos
     } else if (steps[j] == 1) {
-      std::cout<<"pass3 \n";
+      //std::cout<<"pass3 \n";
       for (int i = 0; i < 11; i++) {
         ret->getPixel(x, y+i).h = 0;
         ret->getPixel(x, y+i).s = 1;
@@ -471,8 +478,8 @@ cs225::PNG * SquareMaze::drawMazeWithSolution() {
       }
       y += 10;//inc
     } else if (steps[j] == 2) {
-      std::cout<<"pass4 \n";
-      for (int i = 0; i < 10; i++) {
+      //std::cout<<"pass4 \n";
+      for (int i = 0; i < 11; i++) {
         ret->getPixel(x-i, y).h = 0;
         ret->getPixel(x-i, y).s = 1;
         ret->getPixel(x-i, y).l = 0.5;
@@ -480,8 +487,8 @@ cs225::PNG * SquareMaze::drawMazeWithSolution() {
       }
       x -= 10;//dec
     } else if (steps[j] == 3) {
-      std::cout<<"pass5 \n";
-      for (int i = 0; i < 10; i++) {
+      //std::cout<<"pass5 \n";
+      for (int i = 0; i < 11; i++) {
         ret->getPixel(x, y-i).h = 0;
         ret->getPixel(x, y-i).s = 1;
         ret->getPixel(x, y-i).l = 0.5;
@@ -490,19 +497,14 @@ cs225::PNG * SquareMaze::drawMazeWithSolution() {
       y -= 10;//dec
     }
   }
-  std::cout<<"pass6 \n";
-  ret->getPixel(x, y).h = 0;
-  ret->getPixel(x, y).s = 1;
-  ret->getPixel(x, y).l = 0.5;
-  ret->getPixel(x, y).a = 1.0;
   int mx = x/10;//final
-  int my = height-1;//final
-  for (int i = 0; i < 10; i++) {
-    ret->getPixel(mx*10 +i, (my+1)*10).h = 0.0;
-    ret->getPixel(mx*10 +i, (my+1)*10).s = 1.0;
-    ret->getPixel(mx*10 +i, (my+1)*10).l = 1.0;
-    ret->getPixel(mx*10 +i, (my+1)*10).a = 1.0;
+  //std::cout<<"pass6 \n";
+  for (int i = 1; i < 10; i++) {
+    //ret->getPixel(mx*10 +i, (my+1)*10).h = .57;
+    //ret->getPixel(mx*10 +i, (my+1)*10).s = 1.0;
+    ret->getPixel(mx*10 +i, (height)*10).l = 1;
+    ret->getPixel(mx*10 +i, (height)*10).a = 1;
   }
-  std::cout<<"pass7 \n";
+  //std::cout<<"pass7 \n";
   return ret;
 }
