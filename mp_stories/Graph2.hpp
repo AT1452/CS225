@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <string>
 #include <list>
+#include <unordered_map>
 
 /**
  * Returns an std::list of vertex keys that creates any shortest path between `start` and `end`.
@@ -9,9 +10,9 @@
  * This list MUST include the key of the `start` vertex as the first vertex in the list, the key of
  * the `end` vertex as the last element in the list, and an ordered list of all vertices that must
  * be traveled along the shortest path.
- * 
+ *
  * For example, the path a -> c -> e returns a list with three elements: "a", "c", "e".
- * 
+ *
  * You should use undirected edges. Hint: There are no edge weights in the Graph.
  *
  * @param start The key for the starting vertex.
@@ -21,8 +22,60 @@ template <class V, class E>
 std::list<std::string> Graph<V,E>::shortestPath(const std::string start, const std::string end) {
   // TODO: Part 3
   std::list<std::string> path;
+  std::unordered_map<std::string , std::string> parent;//for mapping parents
+  bool found = false;
+  std::queue<std::string> q;
+  q.push(start);
+  parent.insert({start,start});//start maps to self as parent
+  while(!found)
+  {
+    //std::cout<<"here"<<std::endl;
+    std::string runner = q.front();//popping front
+    //std::cout<<runner<<std::endl;
+    q.pop();
+    std::list<std::reference_wrapper<E>> EList = incidentEdges(runner);
+    //std::cout<<"line done"<<std::endl;
+    for(Edge & e : EList)
+    {
+      //std::cout<<e.source().key()<<" "<<e.dest().key()<<std::endl;
 
+      if(e.dest().key()==end)//set found as true
+      {
+        found = true;
+        //std::cout<<"here1"<<std::endl;
+      }
+      if(e.source().key()==end)
+      {
+        found = true;
+      }
+      //std::cout<<"line done1"<<std::endl;
+      if(parent.find(e.dest().key())==parent.end())//if not in map, insert key which is the dest vertex's key and val is parent
+      {
+        //std::cout<<"pushing "<<e.dest().key()<<std::endl;
+        q.push(e.dest().key());//push all neighbors to q
+        parent.insert({e.dest().key(),e.source().key()});
+      }
+      if(parent.find(e.source().key())==parent.end())//if not in map, insert key which is the dest vertex's key and val is parent
+      {
+        //std::cout<<"pushing "<<e.source().key()<<std::endl;
+        q.push(e.source().key());//push all neighbors to q
+        parent.insert({e.source().key(),e.dest().key()});
+      }
+    }
+  }
+  bool done = false;//for backtracking
+  std::string temp = end;
+  //std::cout<<"here"<<std::endl;
+  while(!done)
+  {
+    //std::cout<<"here2"<<std::endl;
+    if(temp==start)
+    {
+      done = true;
+    }
+    path.push_front(temp);
+    temp = parent.at(temp);
+  }
 
   return path;
 }
-
